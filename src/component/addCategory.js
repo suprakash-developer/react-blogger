@@ -7,37 +7,58 @@ import { Link } from 'react-router-dom'
 export const AddCategory = () => {
   const history=useNavigate();
 
-  //---------Add Category
-  const [addCat, Setcatagori]=useState({
-    catid:'',
-    catName:'',
-    catDesc:'',
-    catImg:''
-  })
-const handleChange=(e)=>{
-  Setcatagori({...addCat,[e.target.name]:e.target.value})
-}
+const [catName, setTitle] = useState('');
+const [catDesc, setDescription] = useState('');
+const [catImg, setImage] = useState(null);
 
-const catAdd=(e)=>{
-  e.preventDefault()
-  const formData={
-    catName:addCat.catName,
-    catDesc:addCat.catDesc
-  }
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
 
-axios.post('http://localhost/blog-react/addcategori.php',formData)
-.then((result)=>{
-  if(result.data.status=='invalid'){
-    alert("Somthing went wrong")
-  } else {
-    Setcatagori([]);
-    document.getElementById('catForm').reset();
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
+  const catAdd = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('catName', catName);
+    formData.append('catDesc', catDesc);
+    formData.append('catImg', catImg);
+
+console.log(formData.catImg);
+  try {
+    const response = await axios.post('http://localhost/blog-react/addcategori.php', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    handleClearForm();
     loadCatagory();
-    history(`/categories`);
+    console.log('Server response:', response.data);
+  } catch (error) {
+    console.error('Error uploading file:', error);
   }
-})
 }
+
+
 //-----------End Add Category
+
+  // ------Clear the form by resetting the state
+  const handleClearForm = () => {
+
+    setTitle("")
+    setDescription("")
+  document.getElementById('formFile').value=""
+    // Reset other fields as needed
+    };
+    
 //View Catagori-----------
  const [viewCat, getCategory]=useState([])
 
@@ -53,12 +74,18 @@ const loadCatagory=async()=>{
 //Delete Catagori-----------
 
 const deleteCat=(id)=>{
- axios.delete('http://localhost/blog-react/deleteCat.php',{data:{id:id}})
- .then(()=>{
-  loadCatagory();
- }).catch(()=>{
-  alert("Somthing went wrong")
- })
+  const confirm=window.confirm("Are you sure to delete Category?")
+  if (confirm==true){
+    axios.delete('http://localhost/blog-react/deleteCat.php',{data:{id:id}})
+    .then(()=>{
+     loadCatagory();
+    }).catch(()=>{
+     alert("Somthing went wrong")
+    })
+  } else {
+    history(`/categories`);
+  }
+
 }
 
   return (
@@ -85,23 +112,23 @@ const deleteCat=(id)=>{
                 <div className="row mb-3">
                   <div className="col-sm-12">
                   <label for="inputEmail3" className="col-form-label">Name</label>
-                    <input onChange={handleChange} name='catName' value={addCat.catName} type="text" className="form-control" id="inputText"/>
+                    <input onChange={handleTitleChange} name='catName' value={catName} type="text" className="form-control" id="inputText"/>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <div className="col-sm-12">
                   <label for="inputEmail3" className="col-form-label">Description</label>
-                  <textarea onChange={handleChange} name='catDesc' value={addCat.catDesc} style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
+                  <textarea onChange={handleDescriptionChange} name='catDesc' value={catDesc} style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
                   </div>
                 </div>
                 <div className="row mb-3">
                 <div className="col-sm-12">
                 <label for="formFile" className="col-form-label">Feature Image</label>
-                    <input onChange={handleChange} name='catImg' value={addCat.catImg} className="form-control" type="file" id="formFile"></input>
+                    <input onChange={handleImageChange} name='catImg' className="form-control" type="file" id="formFile"></input>
   </div></div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
-                  <button type="reset" className="btn btn-secondary mx-3">Reset</button>
+                  <button onClick={handleClearForm} type="reset" className="btn btn-secondary mx-3">Reset</button>
                 </div>
                 </form>
               
@@ -114,6 +141,7 @@ const deleteCat=(id)=>{
         <table className="table">
                 <thead>
                   <tr>
+                  <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Description</th>
                     <th scope="col">Image</th>
@@ -124,15 +152,23 @@ const deleteCat=(id)=>{
                   {viewCat.map((viewCat,index)=>(
                   <tr>
                     <th scope="row">{index+1}</th>
-                    <td>{viewCat.catName}
+                    <td width={'120px'}>{viewCat.catName}
                     <div className="modify">
-                      <Link>Edit</Link> | <Link onClick={()=>deleteCat(viewCat.catID)}>Delete</Link>
-                      
-                    </div>
+                    <Link to={`/editcategories/${viewCat.catID}`}>Edit</Link> | <Link onClick={()=>deleteCat(viewCat.catID)}>Delete</Link>
+                  </div>
                     </td>
                     <td>{viewCat.catDesc}</td>
+                    {(()=>{
+                      if(viewCat.catImg!==""){
+                        return <td><img width={'50px'} height={'50px'} src={viewCat.catImg} alt=''></img></td>
+                      } else {
+                        return <td></td>
+                      }
+                    })()
+                    }
                     <td>28</td>
                   </tr>
+                  
                   ))}
                 </tbody>
               </table>
