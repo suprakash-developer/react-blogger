@@ -18,25 +18,47 @@ const handleChange=(e)=>{
   Setcatagori({...addCat,[e.target.name]:e.target.value})
 }
 
-const catAdd=(e)=>{
+const catAdd=async(e)=>{
+
   e.preventDefault()
   const formData={
     catName:addCat.catName,
-    catDesc:addCat.catDesc
+    catDesc:addCat.catDesc,
+    catImg:addCat.catImg
   }
 
-axios.post('http://localhost/blog-react/addcategori.php',formData)
-.then((result)=>{
-  if(result.data.status=='invalid'){
-    alert("Somthing went wrong")
-  } else {
-    Setcatagori([]);
-    document.getElementById('catForm').reset();
-    loadCatagory();
-    history(`/categories`);
+  try {
+    const response = await axios.post('http://localhost/blog-react/addcategori.php', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log('Server response:', response.data);
+  } catch (error) {
+    console.error('Error uploading file:', error);
   }
-})
+
+// await axios.post('http://localhost/blog-react/addcategori.php',formData)
+// .then((result)=>{
+//   if(result.data.status=='invalid'){
+//     alert("Somthing went wrong")
+//   } else {
+//     loadCatagory();
+//     handleClearForm();
+//     history(`/categories`);
+//   }
+// })
 }
+const handleClearForm = () => {
+  // Clear the form by resetting the state
+  Setcatagori({
+  catName: '',
+  catDesc: '',
+  catImg:'',
+  // Reset other fields as needed
+  });
+  };
 //-----------End Add Category
 //View Catagori-----------
  const [viewCat, getCategory]=useState([])
@@ -53,12 +75,18 @@ const loadCatagory=async()=>{
 //Delete Catagori-----------
 
 const deleteCat=(id)=>{
- axios.delete('http://localhost/blog-react/deleteCat.php',{data:{id:id}})
- .then(()=>{
-  loadCatagory();
- }).catch(()=>{
-  alert("Somthing went wrong")
- })
+  const confirm=window.confirm("Are you sure to delete Category?")
+  if (confirm==true){
+    axios.delete('http://localhost/blog-react/deleteCat.php',{data:{id:id}})
+    .then(()=>{
+     loadCatagory();
+    }).catch(()=>{
+     alert("Somthing went wrong")
+    })
+  } else {
+    history(`/categories`);
+  }
+
 }
 
   return (
@@ -101,7 +129,7 @@ const deleteCat=(id)=>{
   </div></div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
-                  <button type="reset" className="btn btn-secondary mx-3">Reset</button>
+                  <button onClick={handleClearForm} type="reset" className="btn btn-secondary mx-3">Reset</button>
                 </div>
                 </form>
               
@@ -114,6 +142,7 @@ const deleteCat=(id)=>{
         <table className="table">
                 <thead>
                   <tr>
+                  <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Description</th>
                     <th scope="col">Image</th>
@@ -126,11 +155,12 @@ const deleteCat=(id)=>{
                     <th scope="row">{index+1}</th>
                     <td>{viewCat.catName}
                     <div className="modify">
-                      <Link>Edit</Link> | <Link onClick={()=>deleteCat(viewCat.catID)}>Delete</Link>
+                      <Link to={`/editcategories/${viewCat.catID}`}>Edit</Link> | <Link onClick={()=>deleteCat(viewCat.catID)}>Delete</Link>
                       
                     </div>
                     </td>
                     <td>{viewCat.catDesc}</td>
+                    <td>Image</td>
                     <td>28</td>
                   </tr>
                   ))}

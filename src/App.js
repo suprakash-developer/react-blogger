@@ -7,6 +7,7 @@ import { AllPost } from './component/allPost';
 import { NewPost } from './component/newPost';
 import { AddCategory } from './component/addCategory';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { EditCategory } from './component/editCategory';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path='/postnew' element={<NewPost/>}></Route>
       <Route path='/allpost' element={<AllPost/>}></Route>
       <Route path='/categories' element={<AddCategory/>}></Route>
+      <Route path='/editcategories/:id' element={<EditCategory/>}></Route>
      </Routes>
      </Router>
      
