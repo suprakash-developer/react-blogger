@@ -16,6 +16,7 @@ function App() {
      <Header/>
      <Sidebar/>
      <Routes>
+     <Route path='/' element={<Dashboard/>}></Route>
      <Route path='/dashboard' element={<Dashboard/>}></Route>
       <Route path='/postnew' element={<NewPost/>}></Route>
       <Route path='/allpost' element={<AllPost/>}></Route>
