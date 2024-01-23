@@ -1,6 +1,58 @@
 import React from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export const NewPost = () => {
+ const history=useNavigate();
+ const [addpost, SetPost]=useState()
+ const [addpostDesc, SetPostDesc]=useState()
+  const [addCategori, SetCategori]=useState()
+  const [addAuthor, SetAuthor]=useState()
+  const [addImage, SetImage]=useState()
+
+const handleTitleChange=(e)=>{
+  SetPost(e.target.value)
+}
+const handleDescChange=(e)=>{
+  SetPostDesc(e.target.value)
+}
+const handleCateChange=(e)=>{
+  SetCategori(e.target.value)
+}
+const handleAuthorChange=(e)=>{
+  SetAuthor(e.target.value)
+}
+const handleImageChange=(e)=>{
+  const file=e.target.files[0]
+  SetAuthor(file)
+}
+
+const FormSubmit=async(e)=>{
+  e.preventDefault();
+  const formData= new FormData();
+  formData.append('postTitle',addpost)
+  formData.append('postDesc',addpostDesc)
+  formData.append('postCategori',addCategori)
+  formData.append('postAuthor',addAuthor)
+  formData.append('postImage',addImage)
+  console.log(formData)
+
+  try{
+   const response= await axios.post('http://localhost/blog-react/addarticle.php',formData,{
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+   })
+   history(`/allpost`)
+  } catch(error) {
+    console.log("Error to adding Post:",error)
+  }
+}
+
+
+
   return (
     <main id="main" className="main">
 
@@ -21,40 +73,40 @@ export const NewPost = () => {
           <div className="card">
             <div className="card-body">
             <h5 class="card-title">Add Post</h5>
-            <form>
+            <form onSubmit={FormSubmit}>
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Post Title</label>
                   <div className="col-sm-10">
-                    <input type="text" className="form-control" id="inputText"/>
+                    <input onChange={handleTitleChange} type="text" className="form-control" id="inputText"/>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Post Description</label>
                   <div className="col-sm-10">
-                  <textarea style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
+                  <textarea onChange={handleDescChange} style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Select Catagories</label>
                   <div className="col-sm-10">
-                  <select id="inputState" class="form-select">
-                    <option selected>Choose...</option>
-                    <option>...</option>
+                  <select defaultValue={'01'} onChange={handleCateChange} id="inputState" class="form-select">
+                    <option value={'01'}>Choose...</option>
+                    <option value={'02'}>...</option>
                   </select>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Select Author</label>
                   <div className="col-sm-10">
-                  <select id="inputState" className="form-select">
-                    <option selected>Choose...</option>
-                    <option>...</option>
+                  <select defaultValue={'01'} onChange={handleAuthorChange} id="inputState" className="form-select">
+                  <option value={'01'}>Choose...</option>
+                    <option value={'02'}>...</option>
                   </select>
                   </div>
                 </div>
                 <div className="row mb-3">
                 <label for="formFile" className="col-sm-2 col-form-label">Feature Image</label>
-                <div className="col-sm-10"><input className="form-control" type="file" id="formFile"></input>
+                <div className="col-sm-10"><input onChange={handleImageChange} className="form-control" type="file" id="formFile"></input>
   </div></div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
