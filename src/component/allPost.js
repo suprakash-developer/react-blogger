@@ -1,6 +1,21 @@
 import React from 'react'
-import { Table } from 'react-bootstrap'
+import { useState,useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 export const AllPost = () => {
+  const [postList, SetPostlist]=useState([]);
+  const loadArticle=async()=>{
+    const listPost= await axios.get('http://localhost/blog-react/viewarticle.php')
+    SetPostlist(listPost.data.records);
+  }
+useEffect(()=>{
+  loadArticle()
+},[])
+
+const deletePost=(id)=>{
+axios.delete('http://localhost/blog-react/deleteArticle.php',{data:{id:id}});
+loadArticle();
+}
   return (
     <main id="main" className="main">
 
@@ -33,13 +48,28 @@ export const AllPost = () => {
                   </tr>
                 </thead>
                 <tbody>
+                  {postList.map((postList, index)=>(
                   <tr>
-                    <td>Unity Pugh</td>
-                    <td>9958</td>
-                    <td>Curicó</td>
-                    <td>2005/02/11</td>
-                    <td>37%</td>
+                    <td style={{width:"300px"}}>{postList.postTitle}<br/>
+                    <Link to={`/editpost/${postList.ArticleID}`}>Edit</Link> | <Link onClick={()=>deletePost(postList.ArticleID)}>Delete</Link>
+                    </td>
+                    <td>{postList.postauthName}</td>
+                    <td>{postList.postcatName}</td>
+                    {(() => {
+        if (postList.postImage!=="") {
+          return <img style={{width:'50px', height:'50px'}} src={postList.postImage} alt=''></img>
+        } else {
+          return <td></td>
+        }
+      })()}
+                    <td>
+                      
+                      </td>
+
+                    <td>5</td>
                   </tr>
+                  ))
+                }
                 </tbody>
               </table>
               

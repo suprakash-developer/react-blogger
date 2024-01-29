@@ -9,8 +9,21 @@ export const NewPost = () => {
  const [addpost, SetPost]=useState()
  const [addpostDesc, SetPostDesc]=useState()
   const [addCategori, SetCategori]=useState()
+  const [addCatName, SetCatName]=useState()
   const [addAuthor, SetAuthor]=useState()
+  const [addAuthName, SetAuthName]=useState()
   const [addImage, SetImage]=useState()
+
+const [catetories,Setfeatchcat]=useState([])
+
+const loadCat=async()=>{
+  const catTitle= await axios.get('http://localhost/blog-react/viewcat.php');
+  Setfeatchcat(catTitle.data.records)
+}
+useEffect(()=>{
+  loadCat()
+},[]
+)
 
 const handleTitleChange=(e)=>{
   SetPost(e.target.value)
@@ -20,13 +33,23 @@ const handleDescChange=(e)=>{
 }
 const handleCateChange=(e)=>{
   SetCategori(e.target.value)
+  
+  const {options, selectedIndex} = e.target;
+  var nameCat= options[selectedIndex].innerHTML
+console.log(options[selectedIndex].innerHTML);
+  SetCatName(nameCat)
+
 }
 const handleAuthorChange=(e)=>{
   SetAuthor(e.target.value)
+  const {options,selectedIndex}=e.target
+  const nameAuth=options[selectedIndex].innerHTML
+  SetAuthName(nameAuth)
 }
 const handleImageChange=(e)=>{
   const file=e.target.files[0]
-  SetAuthor(file)
+  SetImage(file)
+  previewSelectedImage()
 }
 
 const FormSubmit=async(e)=>{
@@ -35,7 +58,9 @@ const FormSubmit=async(e)=>{
   formData.append('postTitle',addpost)
   formData.append('postDesc',addpostDesc)
   formData.append('postCategori',addCategori)
+  formData.append('postcatName',addCatName)
   formData.append('postAuthor',addAuthor)
+  formData.append('postauthName',addAuthName)
   formData.append('postImage',addImage)
   console.log(formData)
 
@@ -45,13 +70,30 @@ const FormSubmit=async(e)=>{
       'Content-Type': 'multipart/form-data',
     },
    })
-   history(`/allpost`)
+alert(response.data.status);
+  
   } catch(error) {
     console.log("Error to adding Post:",error)
   }
 }
-
-
+const imageInput = document.getElementById('formFile');
+const previewImage = document.getElementById('featureImg');
+function previewSelectedImage() {
+   const file = imageInput.files[0];
+   if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            document.getElementById('imgFeature').style.display="block";
+   }
+}
+}
+const removeImg=()=>{
+  document.getElementById('imgFeature').style.display='none';
+  document.getElementById('formFile').value="";
+  SetImage(null)
+}
 
   return (
     <main id="main" className="main">
@@ -89,23 +131,32 @@ const FormSubmit=async(e)=>{
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Select Catagories</label>
                   <div className="col-sm-10">
-                  <select defaultValue={'01'} onChange={handleCateChange} id="inputState" class="form-select">
-                    <option value={'01'}>Choose...</option>
-                    <option value={'02'}>...</option>
+                  <select onChange={handleCateChange} id="inputState" class="form-select">
+                    <option selected disabled>Select....</option>
+                    { catetories.map((catetories,index)=>(
+                    <option value={catetories.catID}>{catetories.catName}</option>
+                    ))
+                    }
                   </select>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Select Author</label>
                   <div className="col-sm-10">
-                  <select defaultValue={'01'} onChange={handleAuthorChange} id="inputState" className="form-select">
-                  <option value={'01'}>Choose...</option>
-                    <option value={'02'}>...</option>
+                  <select onChange={handleAuthorChange} id="inputState" className="form-select">
+                  <option selected disabled>Select....</option>
+                    <option value={'01'}>Sumit</option>
+                    <option value={'01'}>Ratul</option>
+                    <option value={'01'}>Samim</option>
                   </select>
                   </div>
                 </div>
                 <div className="row mb-3">
                 <label for="formFile" className="col-sm-2 col-form-label">Feature Image</label>
+                    <figure id='imgFeature' style={{display:'none'}}>
+                    <img id='featureImg' style={{width:'100px', height:'100px'}} src='' alt='' ></img>
+                    <span onClick={removeImg}>X</span>
+                    </figure>
                 <div className="col-sm-10"><input onChange={handleImageChange} className="form-control" type="file" id="formFile"></input>
   </div></div>
                 <div className="text-left">

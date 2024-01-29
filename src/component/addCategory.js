@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 export const AddCategory = () => {
   const history=useNavigate();
 
+
 const [catName, setTitle] = useState('');
 const [catDesc, setDescription] = useState('');
 const [catImg, setImage] = useState(null);
@@ -31,7 +32,31 @@ const [catImg, setImage] = useState(null);
     formData.append('catName', catName);
     formData.append('catDesc', catDesc);
     formData.append('catImg', catImg);
+console.log(formData.catName);
 
+
+  //---------Add Category
+//   const [addCat, Setcatagori]=useState({
+//     catName:'',
+//     catDesc:'',
+//   })
+// const [image, setImage] = useState(null);
+
+// const handleChange=(e)=>{
+//   Setcatagori({...addCat,[e.target.name]:e.target.value})
+// }
+// const handleImageChange = (e) => {
+//   const catImg = e.target.files[0];
+//   setImage(catImg);
+// };
+
+// const catAdd=async(e)=>{
+//   e.preventDefault()
+//   const formData={
+//     catName:addCat.catName,
+//     catDesc:addCat.catDesc,
+//     catImg:image
+//   }
 console.log(formData.catImg);
   try {
     const response = await axios.post('http://localhost/blog-react/addcategori.php', formData, {
@@ -45,20 +70,27 @@ console.log(formData.catImg);
   } catch (error) {
     console.error('Error uploading file:', error);
   }
+
+// await axios.post('http://localhost/blog-react/addcategori.php',formData)
+// .then((result)=>{
+//   if(result.data.status=='invalid'){
+//     alert("Somthing went wrong")
+//   } else {
+//     loadCatagory();
+//     handleClearForm();
+//     history(`/categories`);
+//   }
+// })
 }
+const handleClearForm = () => {
+  // Clear the form by resetting the state
+  setTitle("")
+  setDescription("")
+document.getElementById('formFile').value=""
+  // Reset other fields as needed
 
-
+  };
 //-----------End Add Category
-
-  // ------Clear the form by resetting the state
-  const handleClearForm = () => {
-
-    setTitle("")
-    setDescription("")
-  document.getElementById('formFile').value=""
-    // Reset other fields as needed
-    };
-    
 //View Catagori-----------
  const [viewCat, getCategory]=useState([])
 
@@ -123,7 +155,7 @@ const deleteCat=(id)=>{
                 </div>
                 <div className="row mb-3">
                 <div className="col-sm-12">
-                <label for="formFile" className="col-form-label">Feature Image</label>
+                  <label for="formFile" className="col-form-label">Feature Image</label>
                     <input onChange={handleImageChange} name='catImg' className="form-control" type="file" id="formFile"></input>
   </div></div>
                 <div className="text-left">
@@ -158,17 +190,17 @@ const deleteCat=(id)=>{
                   </div>
                     </td>
                     <td>{viewCat.catDesc}</td>
-                    {(()=>{
-                      if(viewCat.catImg!==""){
-                        return <td><img width={'50px'} height={'50px'} src={viewCat.catImg} alt=''></img></td>
-                      } else {
-                        return <td></td>
-                      }
-                    })()
-                    }
+                    <td>
+                    {(() => {
+        if (viewCat.catImg!=="") {
+                      return <img width={'50px'} height={'50px'} src={viewCat.catImg} alt=''></img>
+        } else {
+          return
+        }
+      })()}
+                      </td>
                     <td>28</td>
                   </tr>
-                  
                   ))}
                 </tbody>
               </table>
@@ -177,5 +209,6 @@ const deleteCat=(id)=>{
     </section>
 
   </main>
+
   )
 }
