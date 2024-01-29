@@ -121,7 +121,7 @@ const catAdd= async(e)=>{
                 <label for="formFile" className="col-form-label">Feature Image</label><br/>
                 {(() => {
         if (addImg!=="") {
-          return (<figure>
+          return (<figure className='imgFeature'>
             <img id='featureImg' style={{width:'50px', height:'50px'}} src={disImg} alt=''></img>
             <span onClick={removeImg}>X</span>
             </figure>)
