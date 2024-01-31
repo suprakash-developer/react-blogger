@@ -13,9 +13,18 @@ useEffect(()=>{
 },[])
 
 const deletePost=(id)=>{
-axios.delete('http://localhost/blog-react/deleteArticle.php',{data:{id:id}});
-loadArticle();
+  const confirm=window.confirm("Are you sure to delete Post?")
+  if (confirm==true){
+axios.delete('http://localhost/blog-react/deleteArticle.php',{data:{id:id}})
+.then(()=>{
+  loadArticle();
+}) .catch(()=>{
+  alert("Somthing went wrong")
+})
+} else{
 }
+}
+
   return (
     <main id="main" className="main">
 
