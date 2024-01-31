@@ -19,9 +19,10 @@ export const EditCategory = () => {
         setDisImg(result.data.catImg)
     }
     const removeImg=()=>{
-      document.getElementById('featureImg').style.display='none';
+      document.getElementById('imgFeature').style.display='none';
+      document.getElementById('messError').style.display = 'none';
       document.getElementById('formFile').value="";
-      setImage(null)
+      setImage("")
     }
     
 //---------Add Category
@@ -29,6 +30,7 @@ const [addTitle, setTitle]=useState();
 const [addDesc, setDesc]=useState();
 const [addImg, setImage]=useState(null);
 const [disImg, setDisImg]=useState();
+const [errorMess,SeterrorMess]=useState()
 
 const handleTitleChange=(e)=>{
   setTitle(e.target.value);
@@ -76,8 +78,14 @@ const catAdd= async(e)=>{
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }) ;
-    history(`/categories`)
+    })
+    if (response.data.status == 'invalid') {
+      SeterrorMess(response.data.message);
+      document.getElementById('messError').style.display = 'block';
+    } else {
+      history(`/categories`)
+    }
+    
     console.error('Server response:', response.data);
   } catch (error){
     console.error('Error uploading file:', error);
@@ -87,7 +95,7 @@ const catAdd= async(e)=>{
   return (
     <main id="main" className="main">
     <div className="pagetitle">
-      <h1>Add New Category</h1>
+      <h1>Edit New Category</h1>
       <nav>
         <ol className="breadcrumb">
           <li className="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -121,7 +129,7 @@ const catAdd= async(e)=>{
                 <label for="formFile" className="col-form-label">Feature Image</label><br/>
                 {(() => {
         if (addImg!=="") {
-          return (<figure className='imgFeature'>
+          return (<figure id='imgFeature'>
             <img id='featureImg' style={{width:'50px', height:'50px'}} src={disImg} alt=''></img>
             <span onClick={removeImg}>X</span>
             </figure>)
@@ -131,7 +139,9 @@ const catAdd= async(e)=>{
       })()}
                 
                     <input onChange={handleImageChange} name='catImg' className="form-control" type="file" id="formFile"></input>
-  </div></div>
+  </div>
+  <p id='messError' style={{display:'none', color:'red'}}>{errorMess}</p>
+  </div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
                   <button type="reset" className="btn btn-secondary mx-3">Reset</button>

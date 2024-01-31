@@ -11,7 +11,7 @@ export const AddCategory = () => {
 const [catName, setTitle] = useState('');
 const [catDesc, setDescription] = useState('');
 const [catImg, setImage] = useState(null);
-
+const [errorMess,SeterrorMess]=useState()
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -64,8 +64,13 @@ console.log(formData.catImg);
         'Content-Type': 'multipart/form-data',
       },
     });
-    handleClearForm();
-    loadCatagory();
+    if (response.data.status == 'invalid') {
+      SeterrorMess(response.data.message);
+      document.getElementById('messError').style.display = 'block';
+    } else {
+      handleClearForm();
+      loadCatagory();
+    }
     console.log('Server response:', response.data);
   } catch (error) {
     console.error('Error uploading file:', error);
@@ -157,7 +162,9 @@ const deleteCat=(id)=>{
                 <div className="col-sm-12">
                   <label for="formFile" className="col-form-label">Feature Image</label>
                     <input onChange={handleImageChange} name='catImg' className="form-control" type="file" id="formFile"></input>
-  </div></div>
+  </div>
+  <p id='messError' style={{display:'none', color:'red'}}>{errorMess}</p>
+  </div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
                   <button onClick={handleClearForm} type="reset" className="btn btn-secondary mx-3">Reset</button>
