@@ -2,15 +2,12 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
 
-export const AddCategory = () => {
-  const history=useNavigate();
-
-
-const [catName, setTitle] = useState('');
-const [catDesc, setDescription] = useState('');
-const [catImg, setImage] = useState(null);
+export const AddAuthor = () => {
+const history=useNavigate();
+const [authName, setTitle] = useState('');
+const [authDesc, setDescription] = useState('');
+const [authImg, setImage] = useState(null);
 const [disImg, setDisImg]=useState();
 const [errorMess,SeterrorMess]=useState()
   const handleTitleChange = (e) => {
@@ -24,7 +21,7 @@ const [errorMess,SeterrorMess]=useState()
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
-    previewSelectedImage();
+    previewSelectedImage()
   };
 
   const removeImg=()=>{
@@ -50,15 +47,19 @@ const [errorMess,SeterrorMess]=useState()
   }
 
 
-  const catAdd = async (e) => {
+
+
+  const authorAdd = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('catName', catName);
-    formData.append('catDesc', catDesc);
-    formData.append('catImg', catImg);
+    formData.append('authName', authName);
+    formData.append('authDesc', authDesc);
+    formData.append('authImg', authImg);
+    console.log(formData);
+
   try {
-    const response = await axios.post('http://localhost/blog-react/addcategori.php', formData, {
+    const response = await axios.post('http://localhost/blog-react/addauthor.php', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -67,8 +68,7 @@ const [errorMess,SeterrorMess]=useState()
       SeterrorMess(response.data.message);
       document.getElementById('messError').style.display = 'block';
     } else {
-      handleClearForm();
-      loadCatagory();
+      history(`/allauthor`);
     }
     console.log('Server response:', response.data);
   } catch (error) {
@@ -79,72 +79,44 @@ const handleClearForm = () => {
   // Clear the form by resetting the state
   setTitle("")
   setDescription("")
+  document.getElementById('imgFeature').style.display='none';
 document.getElementById('formFile').value=""
-document.getElementById('imgFeature').style.display='none';
   // Reset other fields as needed
 
   };
-//-----------End Add Category
-//View Catagori-----------
- const [viewCat, getCategory]=useState([])
-
- useEffect(()=>{
-  loadCatagory();
- },
- [])
-const loadCatagory=async()=>{
-  const saveCat = await axios.get('http://localhost/blog-react/viewcat.php')
-  getCategory(saveCat.data.records)
-}
-// End View Catagori-----------
-//Delete Catagori-----------
-
-const deleteCat=(id)=>{
-  const confirm=window.confirm("Are you sure to delete Category?")
-  if (confirm==true){
-    axios.delete('http://localhost/blog-react/deleteCat.php',{data:{id:id}})
-    .then(()=>{
-     loadCatagory();
-    }).catch(()=>{
-     alert("Somthing went wrong")
-    })
-  } else {
-    history(`/categories`);
-  }
-
-}
 
   return (
+
     <main id="main" className="main">
 
     <div className="pagetitle">
-      <h1>Add New Category</h1>
+      <h1>Add New Author</h1>
       <nav>
         <ol className="breadcrumb">
           <li className="breadcrumb-item"><a href="index.html">Home</a></li>
           <li className="breadcrumb-item">Posts</li>
-          <li className="breadcrumb-item active">Add New Post</li>
+          <li className="breadcrumb-item active">Add New Author</li>
         </ol>
       </nav>
     </div>
 
     <section className="section">
       <div className="row">
-        <div className="col-lg-5">
+        <div className="col-lg-12">
           <div className="card">
             <div className="card-body">
-            <h5 class="card-title">Add Category</h5>
-            <form id='catForm' onSubmit={catAdd}>
+            <h5 class="card-title">Add Author</h5>
+            <form id='catForm' onSubmit={authorAdd}>
                 <div className="row mb-3">
                   <div className="col-sm-12">
                   <label for="inputEmail3" className="col-form-label">Name</label>
-                    <input onChange={handleTitleChange} name='catName' value={catName} type="text" className="form-control" id="inputText"/>
+                    <input onChange={handleTitleChange} name='catName' value={authName} type="text" className="form-control" id="inputText"/>
                   </div>
                 </div>
                 <div className="row mb-3">
                   <div className="col-sm-12">
                   <label for="inputEmail3" className="col-form-label">Description</label>
-                  <textarea onChange={handleDescriptionChange} name='catDesc' value={catDesc} style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
+                  <textarea onChange={handleDescriptionChange} name='catDesc' value={authDesc} style={{height:'200px'}} className="form-control" id="floatingTextarea"></textarea>
                   </div>
                 </div>
                 <div className="row mb-3">
@@ -169,45 +141,8 @@ const deleteCat=(id)=>{
           </div>
 
         </div>
-        <div className="col-lg-7">
-        <table className="table">
-                <thead>
-                  <tr>
-                  <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {viewCat.map((viewCat,index)=>(
-                  <tr>
-                    <th scope="row">{index+1}</th>
-                    <td width={'120px'}>{viewCat.catName}
-                    <div className="modify">
-                    <Link to={`/editcategories/${viewCat.catID}`}>Edit</Link> | <Link onClick={()=>deleteCat(viewCat.catID)}>Delete</Link>
-                  </div>
-                    </td>
-                    <td>{viewCat.catDesc}</td>
-                    <td>
-                    {(() => {
-        if (viewCat.catImg!=="") {
-                      return <img width={'50px'} height={'50px'} src={viewCat.catImg} alt=''></img>
-        } else {
-          return
-        }
-      })()}
-                      </td>
-                    <td>28</td>
-                  </tr>
-                  ))}
-                </tbody>
-              </table>
-        </div>
       </div>
     </section>
-
   </main>
 
   )

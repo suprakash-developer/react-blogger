@@ -66,14 +66,14 @@ export const Sidebar = () => {
         </a>
         <ul id="tables-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="tables-general.html">
+            <Link to={'/allauthor'}>
               <i className="bi bi-circle"></i><span>All Authors</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="tables-data.html">
+            <Link to={'/addauthor'}>
               <i className="bi bi-circle"></i><span>Add New Author</span>
-            </a>
+            </Link>
           </li>
         </ul>
       </li>

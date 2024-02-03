@@ -26,6 +26,18 @@ export const NewPost = () => {
   }, []
   )
 
+
+const [viewAuth, getAuthor]=useState([])
+ useEffect(()=>{
+  loadAuthor();
+ },
+ [])
+const loadAuthor=async()=>{
+  const saveAuth = await axios.get('http://localhost/blog-react/viewauth.php')
+  getAuthor(saveAuth.data.records)
+}
+
+
   const handleTitleChange = (e) => {
     SetPost(e.target.value)
   }
@@ -152,9 +164,10 @@ export const NewPost = () => {
                     <div className="col-sm-10">
                       <select onChange={handleAuthorChange} id="inputState" className="form-select">
                         <option selected disabled>Select....</option>
-                        <option value={'01'}>Sumit</option>
-                        <option value={'01'}>Ratul</option>
-                        <option value={'01'}>Samim</option>
+                        {viewAuth.map((viewAuth, index) => (
+                          <option value={viewAuth.authID}>{viewAuth.authName}</option>
+                        ))
+                        }
                       </select>
                     </div>
                   </div>

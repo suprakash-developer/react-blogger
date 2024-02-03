@@ -5,6 +5,13 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 export const EditCategory = () => {
     const history=useNavigate();
+    const [addTitle, setTitle]=useState();
+    const [addDesc, setDesc]=useState();
+    const [addImg, setImage]=useState(null);
+    const [disImg, setDisImg]=useState();
+    const [errorMess,SeterrorMess]=useState()
+
+
     const {id}=useParams()
     useEffect(()=>{
         loadCat()
@@ -22,16 +29,10 @@ export const EditCategory = () => {
       document.getElementById('imgFeature').style.display='none';
       document.getElementById('messError').style.display = 'none';
       document.getElementById('formFile').value="";
-      setImage("")
+      setImage('')
     }
     
 //---------Add Category
-const [addTitle, setTitle]=useState();
-const [addDesc, setDesc]=useState();
-const [addImg, setImage]=useState(null);
-const [disImg, setDisImg]=useState();
-const [errorMess,SeterrorMess]=useState()
-
 const handleTitleChange=(e)=>{
   setTitle(e.target.value);
 }
@@ -69,9 +70,9 @@ const catAdd= async(e)=>{
   if(addImg!==""){
     formData.append('catImg',addImg);
   }else{
-    
+    formData.append('catImg','');
   }
-  
+  console.log(formData)
   
   try{
     const response= await axios.post('http://localhost/blog-react/updatecategori.php',formData,{
@@ -79,6 +80,7 @@ const catAdd= async(e)=>{
         'Content-Type': 'multipart/form-data',
       },
     })
+    
     if (response.data.status == 'invalid') {
       SeterrorMess(response.data.message);
       document.getElementById('messError').style.display = 'block';
