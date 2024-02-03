@@ -9,6 +9,9 @@ import { AddCategory } from './component/addCategory';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { EditCategory } from './component/editCategory';
 import { EditPost } from './component/editPost';
+import { AddAuthor } from './component/addAuthor';
+import { AllAuthor } from './component/allAuthor';
+import { EditAuthor } from './component/editAuthor';
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
       <Route path='/editpost/:id' element={<EditPost/>}></Route>
       <Route path='/categories' element={<AddCategory/>}></Route>
       <Route path='/editcategories/:id' element={<EditCategory/>}></Route>
+      <Route path='/addauthor' element={<AddAuthor/>}></Route>
+      <Route path='/allauthor' element={<AllAuthor/>}></Route>
+      <Route path='/editauthor/:id' element={<EditAuthor/>}></Route>
      </Routes>
      </Router>
      

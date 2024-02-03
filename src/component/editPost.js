@@ -13,7 +13,7 @@ export const EditPost = () => {
   const [getpostauth, setPostauth]=useState();
   const [getpostimg, setPostimg]=useState(null);
   const [disImg, setDisImg]=useState();
-
+  const [errorMess,SeterrorMess]=useState();
   const {id}=useParams();
   useEffect(()=>{
     loadPost();
@@ -35,6 +35,7 @@ export const EditPost = () => {
 
   const removeImg=()=>{
     document.getElementById('imgFeature').style.display='none';
+    document.getElementById('messError').style.display = 'none';
     document.getElementById('formFile').value="";
     setPostimg('')
   }
@@ -94,6 +95,17 @@ export const EditPost = () => {
     loadCat()
   },[]
   )
+
+  const [viewAuth, getAuthor]=useState([])
+  useEffect(()=>{
+   loadAuthor();
+  },
+  [])
+ const loadAuthor=async()=>{
+   const saveAuth = await axios.get('http://localhost/blog-react/viewauth.php')
+   getAuthor(saveAuth.data.records)
+ }
+
   
   const FormSubmit=async(e)=>{
     e.preventDefault();
@@ -119,7 +131,13 @@ export const EditPost = () => {
         'Content-Type': 'multipart/form-data',
       },
      })
-     history(`/allpost`)
+     if(response.data.status=="invalid"){
+      SeterrorMess(response.data.message);
+      document.getElementById('messError').style.display = 'block';
+     }else{
+      history(`/allpost`)
+     }
+     
     } catch(error) {
       console.log("Error to adding Post:",error)
     }
@@ -177,9 +195,12 @@ export const EditPost = () => {
                   <label for="inputEmail3" className="col-sm-2 col-form-label">Select Author</label>
                   <div className="col-sm-10">
                   <select onChange={handleAuthorChange} id="inputState" className="form-select">
-                    <option value={'01'}>Sumit</option>
-                    <option selected value={'01'}>Ratul</option>
-                    <option value={'01'}>Samim</option>
+                  { viewAuth.map((viewAuth,index)=>(
+                      addAuthName==viewAuth.catName
+                    ? <option selected value={viewAuth.authID}>{viewAuth.authName}</option>
+                    : <option value={viewAuth.authID}>{viewAuth.authName}</option>
+                    ))
+                    }
                   </select>
                   </div>
                 </div>
@@ -196,7 +217,9 @@ export const EditPost = () => {
         }
       })()}
                 <div className="col-sm-10"><input onChange={handleImageChange} className="form-control" type="file" id="formFile"></input>
-  </div></div>
+  </div>
+  <p id='messError' style={{display:'none', color:'red'}}>{errorMess}</p>
+  </div>
                 <div className="text-left">
                   <button type="submit" className="btn btn-primary">Update</button>
                   <button type="reset" className="btn btn-secondary mx-3">Reset</button>
