@@ -20,7 +20,7 @@ export const EditPost = () => {
   },
   [disImg])
   const loadPost=async()=>{
-    const postItem = await axios.get('http://localhost/blog-react/editArticle.php?id='+id);
+    const postItem = await axios.get('http://localhost/blog-react/editarticle.php?id='+id);
     setPosttitle(postItem.data.postTitle);
     setPostdesc(postItem.data.postDesc);
     setcatname(postItem.data.postcatName);
