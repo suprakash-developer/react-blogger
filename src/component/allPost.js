@@ -6,6 +6,7 @@ export const AllPost = () => {
   const [postList, SetPostlist]=useState([]);
   const loadArticle=async()=>{
     const listPost= await axios.get('http://localhost/blog-react/viewarticle.php')
+    console.log(listPost.data.records);
     SetPostlist(listPost.data.records);
   }
 useEffect(()=>{
@@ -26,6 +27,7 @@ axios.delete('http://localhost/blog-react/deleteArticle.php',{data:{id:id}})
 }
 
   return (
+    
     <main id="main" className="main">
 
     <div className="pagetitle">
@@ -57,7 +59,7 @@ axios.delete('http://localhost/blog-react/deleteArticle.php',{data:{id:id}})
                   </tr>
                 </thead>
                 <tbody>
-                  {postList.map((postList, index)=>(
+                  {postList.map((postList)=>(
                   <tr>
                     <td style={{width:"300px"}}>{postList.postTitle}<br/>
                     <Link to={`/editpost/${postList.ArticleID}`}>Edit</Link> | <Link onClick={()=>deletePost(postList.ArticleID)}>Delete</Link>
